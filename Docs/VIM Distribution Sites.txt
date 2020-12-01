@@ -1,0 +1,94 @@
+-- VIM Distribution Sites --      Last change: 2020 Aug 13
+
+Vim can be found at:
+  https://ftp.nluug.nl/pub/vim/                         Holland, Amsterdam  *1
+  http://ftp.vim.org/pub/vim/                           Holland, Amsterdam
+  ftp://ftp.home.vim.org/pub/vim/                       Holland, Amsterdam
+  rsync://ftp.vim.org/Vim                               Holland, Amsterdam
+
+*1 different domain, because that's what the certificate is for
+
+
+HTTPS mirror of ftp site:
+   https://ftp.stu.edu.tw/pub/vim/                       Taiwan, Kaohsiung  *2
+   https://ftp.cc.uoc.gr/pub/vim/                        Greece, Heraklion
+   https://ftp.pl.vim.org/pub/vim/                       Poland, Oswiecim
+   https://www.mirrorservice.org/pub/vim/                England, Kent  
+   https://ftp.cz.vim.org/pub/vim                        Czechia, Prague *3
+   https://vim.mirror.garr.it/pub/vim/                   Italy, Rome
+
+*2  https mirror of http://ftp2.tw.vim.org/pub/vim/
+*3  redirects to https://ftp.sh.cvut.cz/pub/vim/
+
+
+HTTP mirror of ftp site:
+   http://ftp2.tw.vim.org/pub/vim/                       Taiwan, Kaohsiung   
+   http://mirrors.standaloneinstaller.com/vim            France, Strasbourg  
+   http://ftp.gr.vim.org/pub/vim/                        Greece, Heraklion   
+   http://ftp.sh.cvut.cz/pub/vim/                        Czechia, Prague     
+   http://ftp.pl.vim.org/pub/vim                         Poland, Oswiecim    
+   http://ftp2.pl.vim.org/pub/vim                        Poland, Oswiecim    
+   http://mirror.netinch.com/pub/vim/                    Finland, Tampere    
+   http://ftp2.uk.vim.org/pub/vim/                       England, Kent       
+   http://ftp2.jp.vim.org/pub/vim                        Japan, Tsukuba      
+   http://ftp2.kr.vim.org/pub/vim/                       Korea, Daejeon      
+   http://www.netgull.com/vim                            USA, Dallas         
+   http://mirror.metrocast.net/vim                       USA, NH, Rochester  
+   http://ftp.cz.vim.org/pub/vim                         Czechia, Prague *4
+
+*4 redirects to http://ftp.sh.cvut.cz/pub/vim/
+
+
+FTP Mirrors:
+   ftp://ftp.ca.vim.org/pub/vim/                         Canada, Burlington  
+   ftp://ftp.nl.vim.org/pub/vim/                         Holland, Amsterdam  
+   ftp://ftp.de.vim.org/                                 Germany, Berlin     
+   ftp://ftp3.de.vim.org/pub/vim/                        Germany, Oldenburg  
+   ftp://ftp.cz.vim.org/pub/vim                          Czechia, Prague     
+   ftp://ftp.uk.vim.org/pub/vim/                         England, London     
+   ftp://ftp2.uk.vim.org/pub/vim/                        England, Kent       
+   ftp://mirror.netinch.com/pub/vim/                     Finland, Tampere    
+   ftp://ftp.gr.vim.org/pub/vim/                         Greece, Heraklion   
+ + ftp://ftp.pl.vim.org/pub/vim/                         Poland, Warsaw      
+   ftp://ftp2.pl.vim.org/pub/vim                         Poland, Oswiecim    
+   ftp://ftp.sh.cvut.cz/pub/vim/                         Czechia, Prague     
+   ftp://vim.tsu.ru/pub/vim                              Russia, Tomsk       
+   ftp://ftp2.tw.vim.org/pub/vim                         Taiwan, Kaohsiung   
+   ftp://ftp.jp.vim.org/pub/vim/                         Japan, Tokyo        
+   ftp://ftp.kr.vim.org/pub/vim/                         Korea, Seoul        
+ 
+
+RSYNC mirrors of the ftp site:
+   rsync://ftp.nl.vim.org/Vim                            Holland, Amsterdam  
+   rsync://ftp2.uk.vim.org/ftp.vim.org/pub/vim/          England, Kent       
+   rsync://mirrors.standaloneinstaller.com/vim           France, Strasbourg  
+   rsync://ftp.pl.vim.org/pub/vim/                       Poland, Warsaw      
+   rsync://ftp.ca.vim.org/vim                            Canada, Burlington  
+   rsync://ftp2.jp.vim.org/vim                           Japan, Tsukuba      
+   rsync://ftp2.kr.vim.org/vim/                          Korea, Daejeon      
+
+        ? Might not always work
+        + Also keeps older versions
+        - Not up to date
+        x Some files are compressed to .gz
+        = Can list contents of archives, nice!
+
+You can get the most recent version from Github, see:
+        http://www.vim.org/git.php
+Or use Mercurial, see:
+        http://www.vim.org/mercurial.php
+
+
+The MacVim source can be found here:
+   https://github.com/macvim-dev/macvim
+
+
+If you set up a mirror:
+- always mirror from ftp://ftp.home.vim.org/pub/vim/
+- please use the "/pub/vim" directory, so we can make an alias
+  "ftp.<country>.vim.org/pub/vim"
+- send a message to Bram@vim.org to get an entry in this list and an
+  ftp.<country>.vim.org alias
+
+If you see an error in this file, please report it to Bram Moolenaar
+(Bram AT vim.org).                                         vim: set et:

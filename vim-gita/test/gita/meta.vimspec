@@ -1,0 +1,170 @@
+let s:V = vital#of('vital')
+let s:Prelude = s:V.import('Prelude')
+
+Describe gita#meta
+  Before
+    let Path = s:V.import('System.Filepath')
+    let Guard = s:V.import('Vim.Guard')
+  End
+
+  After
+    call gita#meta#clear()
+    windo bwipeout!
+  End
+
+  Describe #get({name}[, {default}, {expr}])
+    It returns an empty value if no {name} exists
+      Assert Equals(gita#meta#get('foo'), '')
+    End
+
+    It returns {default} if no {name} exists and {default} is specified
+      Assert Equals(gita#meta#get('foo', 'foo'), 'foo')
+    End
+
+    It returns a registered value of {name}
+      call gita#meta#set('foo', 'bar')
+      Assert Equals(gita#meta#get('foo'), 'bar')
+    End
+
+    It returns a registered value of {name} in {expr}
+      call gita#meta#set('foo', 'bar')
+      new | call gita#meta#set('foo', 'hoge')
+      Assert Equals(gita#meta#get('foo', '', '%'), 'hoge')
+      Assert Equals(gita#meta#get('foo', '', '#'), 'bar')
+    End
+  End
+
+  Describe #get_for({content_type}, {name}[, {default}, {expr}])
+    It returns an empty value if no {content_type} mis-match
+      Assert Equals(gita#meta#get_for('foo', 'foo'), '')
+    End
+
+    It returns {default} if no {content_type} mis-match
+      Assert Equals(gita#meta#get_for('foo', 'foo', 'foo'), 'foo')
+    End
+
+    It returns a registered value of {name} if {content_type} match
+      call gita#meta#set('content_type', 'foo')
+      call gita#meta#set('foo', 'bar')
+      Assert Equals(gita#meta#get_for('foo', 'foo'), 'bar')
+    End
+
+    It returns a registered value of {name} in {expr} if {content_type} match
+      call gita#meta#set('content_type', 'foo')
+      call gita#meta#set('foo', 'bar')
+      new
+      call gita#meta#set('content_type', 'foo')
+      call gita#meta#set('foo', 'hoge')
+      Assert Equals(gita#meta#get_for('foo', 'foo', '', '%'), 'hoge')
+      Assert Equals(gita#meta#get_for('foo', 'foo', '', '#'), 'bar')
+    End
+  End
+
+  Describe #set({name}, {value}[, {expr}])
+    It sets {value} into {name}
+      call gita#meta#set('foo', 'bar')
+      Assert Equals(gita#meta#get('foo'), 'bar')
+    End
+
+    It sets {value} into {name} in {expr}
+      new
+      call gita#meta#set('foo', 'hoge', '%')
+      call gita#meta#set('foo', 'bar', '#')
+      Assert Equals(gita#meta#get('foo', '', '%'), 'hoge')
+      Assert Equals(gita#meta#get('foo', '', '#'), 'bar')
+    End
+  End
+
+  Describe #remove({name}[, {expr}])
+    It remove value of {name}
+      call gita#meta#set('foo', 'bar')
+      call gita#meta#remove('foo')
+      Assert Equals(gita#meta#get('foo'), '')
+    End
+
+    It remove value of {name} in {expr}
+      call gita#meta#set('foo', 'bar')
+      new
+      call gita#meta#set('foo', 'hoge')
+      call gita#meta#remove('foo', '%')
+      call gita#meta#remove('foo', '#')
+      Assert Equals(gita#meta#get('foo', '', '%'), '')
+      Assert Equals(gita#meta#get('foo', '', '#'), '')
+    End
+  End
+
+  Describe #clear([{expr}])
+    It clears all values
+      call gita#meta#set('foo', 'bar')
+      call gita#meta#set('bar', 'bar')
+      call gita#meta#clear()
+      Assert Equals(gita#meta#get('foo'), '')
+      Assert Equals(gita#meta#get('bar'), '')
+    End
+    It clears all values in {expr}
+      call gita#meta#set('foo', 'bar')
+      call gita#meta#set('bar', 'bar')
+      new
+      call gita#meta#set('foo', 'bar')
+      call gita#meta#set('bar', 'bar')
+      call gita#meta#clear('%')
+      call gita#meta#clear('#')
+      Assert Equals(gita#meta#get('foo', '', '%'), '')
+      Assert Equals(gita#meta#get('bar', '', '%'), '')
+      Assert Equals(gita#meta#get('foo', '', '#'), '')
+      Assert Equals(gita#meta#get('bar', '', '#'), '')
+    End
+  End
+
+  Describe #expand({expr})
+    It expand {expr} and return an absolute path of {expr} if {expr} is a special
+      file foobar
+      Assert Equals(gita#meta#expand('%'), expand('%:p'))
+      Assert Equals(gita#meta#expand('#'), expand('#:p'))
+      Assert Equals(gita#meta#expand('#n'), expand('#n:p'))
+      Assert Equals(gita#meta#expand('<cfile>'), expand('<cfile>:p'))
+      Assert Equals(gita#meta#expand('<cword>'), expand('<sword>'))
+      Assert Equals(gita#meta#expand('<cWORD>'), expand('<sWORD>'))
+      " NOTE:
+      " Behavior for <afile>, <abuf>, <amatch>, <sfile>, <slnum> is difficult to test
+    End
+    It expand filename in meta and return "as is" if available
+      file foobar
+      call gita#meta#set('filename', 'hogehoge')
+      Assert Equals(gita#meta#expand('%'), 'hogehoge')
+    End
+    It does not expand 'foobar' and return 'foobar'
+      file foobar
+      Assert Equals(gita#meta#expand('foobar'), 'foobar')
+    End
+
+    if s:Prelude.is_windows()
+      Before
+        let guard = Guard.store(['&shellslash'])
+      End
+
+      After
+        call guard.restore()
+      End
+
+      It return a correct REAL path in Windows with noshellslash
+        set noshellslash
+        let ret = gita#meta#expand('C:\Windows\Foo\Bar.txt')
+        Assert Equals(ret, 'C:\Windows\Foo\Bar.txt')
+
+        let ret = gita#meta#expand('C:/Windows/Foo/Bar.txt')
+        Assert Equals(ret, 'C:\Windows\Foo\Bar.txt')
+      End
+
+      It return a correct REAL path in Windows with shellslash
+        set shellslash
+        let ret = gita#meta#expand('C:\Windows\Foo\Bar.txt')
+        Assert Equals(ret, 'C:/Windows/Foo/Bar.txt')
+
+        let ret = gita#meta#expand('C:/Windows/Foo/Bar.txt')
+        Assert Equals(ret, 'C:/Windows/Foo/Bar.txt')
+      End
+    endif
+  End
+End
+

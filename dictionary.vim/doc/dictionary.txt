@@ -1,0 +1,140 @@
+*dictionary.txt*	Dictionary.app interface for Vim
+
+Version: 0.0
+Author: itchyny (https://github.com/itchyny)
+License: MIT License
+Repository: https://github.com/itchyny/dictionary.vim
+Last Change: 2015/02/10 07:09:06.
+
+CONTENTS					*dictionary-contents*
+
+Introduction				|dictionary-introduction|
+Commands				|dictionary-commands|
+Options					|dictionary-options|
+Variables				|dictionary-variables|
+Key Mappings				|dictionary-key-mappings|
+Troubleshooting				|dictionary-troubleshooting|
+Changelog				|dictionary-changelog|
+
+==============================================================================
+INTRODUCTION					*dictionary-introduction*
+
+The *dictionary* plugin provides an interface for Dictionary.app in vim.
+
+------------------------------------------------------------------------------
+COMMANDS					*dictionary-commands*
+
+:Dictionary [{options}] [search word]
+						*:Dictionary*
+		Open a new buffer and start searching in Dictionary.app.
+		If a word is given, the plugin looks up the argument word.
+
+------------------------------------------------------------------------------
+OPTIONS						*dictionary-options*
+
+You can specify some options to modify the appearance of the dictionary buffer.
+
+						*dictionary-options-horizontal*
+		-horizontal
+		Open the dictionary buffer horizontally.
+
+						*dictionary-options-vertical*
+		-vertical
+		Open the dictionary buffer vertically.
+
+						*dictionary-options-below*
+		-below
+		Open the split window with below command prefix.
+
+						*dictionary-options-here*
+		-here[!]
+		Open the dictionary buffer at the same window of the current
+		buffer. If some changes exist in the current buffer, this
+		option is ignored. An '!' is added to discard any changes in
+		the current buffer.
+
+						*dictionary-options-newtab*
+		-newtab
+		Open the dictionary buffer in a new tab. When this option is
+		set, it opens a new tab even when the current buffer is a
+		unnamed buffer with no text.
+
+						*dictionary-options-no-duplicate*
+		-no-duplicate
+		Search the dictionary buffer in the current tab, and enter the
+		buffer if found.
+
+						*dictionary-options-cursor-word*
+		-cursor-word
+		Open the dictionary with the word under the cursor.
+
+------------------------------------------------------------------------------
+VARIABLES					*dictionary-variables*
+
+g:dictionary_executable_path			*g:dictionary_executable_path*
+		The path of the dictionary executable.
+		In default, the same path of dictionary.m is used.
+
+g:dictionary_executable_name			*g:dictionary_executable_name*
+		The name of the dictionary executable.
+		In default, "dictionary".
+
+g:dictionary_compile_command			*g:dictionary_compile_command*
+		The command name for compile dictionary.m.
+		In default, if |llvm-gcc| is available, |llvm-gcc| is used, |gcc|
+		otherwise.
+
+g:dictionary_compile_option			*g:dictionary_compile_option*
+		The option used for compile dictionary.m.
+		The default value is
+		"-O3 -framework CoreServices -framework Foundation"
+
+------------------------------------------------------------------------------
+KEY MAPPINGS					*dictionary-key-mappings*
+
+Normal mode key mappings in dictionary buffers.
+<Plug>(dictionary_jump)				*<Plug>(dictionary_jump)*
+		Search the word under the cursor.
+
+<Plug>(dictionary_jump_back)			*<Plug>(dictionary_jump_back)*
+		Jump to [count] older word.
+
+<Plug>(dictionary_exit)				*<Plug>(dictionary_exit)*
+		Close the dictionary buffer.
+
+Normal mode default mappings in dictionary buffers.
+{lhs}		{rhs}
+--------	----------------------------
+<C-]>		|<Plug>(dictionary_jump)|
+<C-t>		|<Plug>(dictionary_jump_back)|
+q		|<Plug>(dictionary_exit)|
+
+Insert mode key mappings.
+
+<Plug>(dictionary_nop)				*i_<Plug>(dictionary_nop)*
+		Nothing.
+
+Insert mode default mappings in dictionary buffers.
+{lhs}		{rhs}
+--------	-----------------------
+<CR>		|i_<Plug>(dictionary_nop)|
+
+==============================================================================
+CHANGELOG					*dictionary-changelog*
+
+0.0	2013-06-23 -
+	- Initial commit and implementation
+	- Jump feature
+	- Word suggestion
+	- Configurable path of the dictionary executable, compile options
+	- Improve option parser and add '-here!'.
+	- Move core codes to autoload/dictionary.vim.
+	- Improve the syntax
+	- Remove noautocmd
+	- Improve the buffer's name
+	- Improve buffer initialization
+	- Add '-no-duplicate'
+	- Save &cpo and set cpo&
+
+==============================================================================
+vim:tw=78:sw=4:ts=8:ft=help:norl:noet:

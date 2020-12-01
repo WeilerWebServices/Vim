@@ -1,0 +1,6 @@
+{
+  "name": "",
+  "dependencies": {
+    "vscode-css-languageserver-bin": "^1.4.0"
+  }
+}

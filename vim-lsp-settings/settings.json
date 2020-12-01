@@ -1,0 +1,260 @@
+{
+  "c": [
+    {
+      "command": "clangd",
+      "requires": []
+    }
+  ],
+  "clojure": [
+    {
+      "command": "clojure-lsp",
+      "requires": []
+    }
+  ],
+  "cobol": [
+    {
+      "command": "cobol-language-support",
+      "requires": [
+        "java"
+      ]
+    }
+  ],
+  "cpp": [
+    {
+      "command": "clangd",
+      "requires": []
+    }
+  ],
+  "cs": [
+    {
+      "command": "omnisharp-lsp",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "css": [
+    {
+      "command": "css-languageserver",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "dockerfile": [
+    {
+      "command": "docker-langserver",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "elm": [
+    {
+      "command": "elm-language-server",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "fortran": [
+    {
+      "command": "fortls",
+      "requires": [
+        "python3"
+      ]
+    }
+  ],
+  "go": [
+    {
+      "command": "gopls",
+      "requires": [
+        "go"
+      ]
+    }
+  ],
+  "html": [
+    {
+      "command": "html-languageserver",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "java": [
+    {
+      "command": "eclipse-jdt-ls",
+      "requires": [
+        "java"
+      ]
+    }
+  ],
+  "javascript": [
+    {
+      "command": "javascript-typescript-langserver",
+      "requires": [
+        "npm"
+      ]
+    },
+    {
+      "command": "typescript-language-server",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "json": [
+    {
+      "command": "json-languageserver",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "kotlin": [
+    {
+      "command": "kotlin-language-server",
+      "requires": [
+        "java"
+      ]
+    }
+  ],
+  "less": [
+    {
+      "command": "css-languageserver",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "lua": [
+    {
+      "command": "emmylua-ls",
+      "requires": [
+        "java"
+      ]
+    }
+  ],
+  "php": [
+    {
+      "command": "intelephense",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "python": [
+    {
+      "command": "pyls",
+      "requires": [
+        "python3"
+      ]
+    }
+  ],
+  "reason": [
+    {
+      "command": "reason-language-server",
+      "requires": []
+    }
+  ],
+  "ruby": [
+    {
+      "command": "solargraph",
+      "requires": [
+        "gem"
+      ]
+    }
+  ],
+  "rust": [
+    {
+      "command": "rls",
+      "requires": []
+    }
+  ],
+  "sass": [
+    {
+      "command": "css-languageserver",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "scala": [
+    {
+      "command": "metals",
+      "requires": [
+        "java"
+      ]
+    }
+  ],
+  "sh": [
+    {
+      "command": "bash-language-server",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "swift": [
+    {
+      "command": "sourcekit-lsp",
+      "requires": [
+        "sourcekit-lsp"
+      ]
+    }
+  ],
+  "terraform": [
+    {
+      "command": "terraform-lsp",
+      "requires": []
+    }
+  ],
+  "typescript": [
+    {
+      "command": "typescript-language-server",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "vim": [
+    {
+      "command": "vim-language-server",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "xml": [
+    {
+      "command": "lsp4xml",
+      "requires": [
+        "java"
+      ]
+    }
+  ],
+  "yaml": [
+    {
+      "command": "yaml-language-server",
+      "requires": [
+        "npm"
+      ]
+    }
+  ],
+  "plaintex": [
+    {
+      "command": "digestif",
+      "requires": [
+        "luarocks"
+      ]
+    }
+  ],
+  "tex": [
+    {
+      "command": "digestif",
+      "requires": [
+        "luarocks"
+      ]
+    }
+  ]
+}

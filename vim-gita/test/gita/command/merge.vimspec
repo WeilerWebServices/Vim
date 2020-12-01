@@ -1,0 +1,188 @@
+Describe gita#command#merge
+  Before all
+    let V = vital#of('vital')
+    let Path = V.import('System.Filepath')
+    let Guard = V.import('Vim.Guard')
+    let ScriptLocal = V.import('Vim.ScriptLocal')
+    let ProcessMock = V.import('System.Process.Mock')
+  End
+
+  Before
+    let sf = ScriptLocal.sfuncs(
+          \ Path.realpath('autoload/gita/command/merge.vim')
+          \)
+    let guard = Guard.store([
+          \ 'g:gita#process#options',
+          \ 'g:gita#command#merge#default_options',
+          \])
+    let g:gita#process#options = {
+          \ 'clients': [deepcopy(ProcessMock)],
+          \}
+  End
+
+  After
+    call guard.restore()
+  End
+
+  Describe s:args_from_options({git}, {options})
+    It returns a {args} List of {options}
+      new
+      let options = {
+            \ 'stat': 1,
+            \ 'no-stat': 1,
+            \ 'log': '10',
+            \ 'no-log': 1,
+            \ 'squash': 1,
+            \ 'no-squash': 1,
+            \ 'commit': 1,
+            \ 'no-commit': 1,
+            \ 'ff': 1,
+            \ 'no-ff': 1,
+            \ 'ff-only': 1,
+            \ 'rerere-autoupdate': 1,
+            \ 'no-rerere-autoupdate': 1,
+            \ 'verify-signatures': 1,
+            \ 'no-verify-signatures': 1,
+            \ 'strategy': ['A', 'B', 'C'],
+            \ 'strategy-option': 'A',
+            \ 'abort': 1,
+            \ 'gpg-sign': 1,
+            \ '__unknown__': [
+            \   'a',
+            \   'b',
+            \ ],
+            \}
+      let git = gita#core#get_or_fail()
+      let ret = sf.args_from_options(git, options)
+      Assert Equals(ret, [
+            \ 'merge',
+            \ '--no-edit',
+            \ '--verbose',
+            \ '--abort',
+            \ '--commit',
+            \ '--ff',
+            \ '--ff-only',
+            \ '--gpg-sign',
+            \ '--log=10',
+            \ '--no-commit',
+            \ '--no-ff',
+            \ '--no-log',
+            \ '--no-rerere-autoupdate',
+            \ '--no-squash',
+            \ '--no-stat',
+            \ '--no-verify-signatures',
+            \ '--rerere-autoupdate',
+            \ '--squash',
+            \ '--stat',
+            \ '--strategy=A', '--strategy=B', '--strategy=C',
+            \ '--strategy-option=A',
+            \ '--verify-signatures',
+            \ 'a', 'b',
+            \])
+    End
+
+    It ignores unknown attributes in {options}
+      let options = {
+            \ 'foobar': 1,
+            \}
+      let git = gita#core#get_or_fail()
+      let ret = sf.args_from_options(git, options)
+      Assert Equals(ret, [
+            \ 'merge',
+            \ '--no-edit',
+            \ '--verbose',
+            \])
+    End
+  End
+
+  Describe #execute({git}, {options})
+    let prefix = ['merge', '--no-edit', '--verbose']
+
+    It executes 'merge --no-edit --verbose' for options: {}
+      let git = gita#core#get()
+      let result = gita#command#merge#execute(git, {})
+      Assert Equals(result.args[-3:], [
+            \ 'merge', '--no-edit', '--verbose',
+            \])
+    End
+
+    It executes 'merge --no-edit --verbose --stat' for options: {'stat': 1}
+      let git = gita#core#get()
+      let result = gita#command#merge#execute(git, {
+            \ 'stat': 1,
+            \})
+      Assert Equals(result.args[-4:], [
+            \ 'merge', '--no-edit', '--verbose', '--stat',
+            \])
+    End
+
+    It executes 'merge --no-edit --verbose --log=10 --stat' for options: {'stat': 1, 'log': 10}
+      let git = gita#core#get()
+      let result = gita#command#merge#execute(git, {
+            \ 'stat': 1,
+            \ 'log': '10',
+            \})
+      Assert Equals(result.args[-5:], [
+            \ 'merge', '--no-edit', '--verbose', '--log=10', '--stat',
+            \])
+    End
+
+    It executes 'merge --no-edit --verbose develop' for options: {'__unknown__': ['develop']}
+      let git = gita#core#get()
+      let result = gita#command#merge#execute(git, {
+            \ '__unknown__': ['develop'],
+            \})
+      Assert Equals(result.args[-4:], [
+            \ 'merge', '--no-edit', '--verbose', 'develop',
+            \])
+    End
+  End
+
+  Describe #command({bang}, {range}, {args})
+    let prefix = ['merge', '--no-edit', '--verbose']
+
+    It shows a help and do nothing if -h/--help is specified
+      silent let result = gita#command#merge#command('', [0, 0], ['-h'])
+      Assert Equals(result, {})
+
+      silent let result = gita#command#merge#command('', [0, 0], ['--help'])
+      Assert Equals(result, {})
+    End
+
+    It executes a command with default options
+      silent let result = gita#command#merge#command('', [0, 0], [])
+      Assert Equals(result.args[-3:], prefix )
+
+      let g:gita#command#merge#default_options = {
+            \ 'stat': 1,
+            \ 'log': '10',
+            \}
+      silent let result = gita#command#merge#command('', [0, 0], [])
+      Assert Equals(result.args[-5:], [
+            \ 'merge', '--no-edit', '--verbose', '--log=10', '--stat',
+            \])
+    End
+
+    It triggers modified
+      augroup vim-gita-temporary
+        autocmd! *
+        autocmd User GitaStatusModifiedPre let g:GitaStatusModifiedPreCalled = 1
+        autocmd User GitaStatusModifiedPost let g:GitaStatusModifiedPostCalled = 1
+      augroup END
+
+      let g:GitaStatusModifiedPreCalled = 0
+      let g:GitaStatusModifiedPostCalled = 0
+      silent let result = gita#command#merge#command('', [0, 0], [])
+      Assert True(g:GitaStatusModifiedPreCalled)
+      Assert True(g:GitaStatusModifiedPostCalled)
+
+      unlet g:GitaStatusModifiedPreCalled
+      unlet g:GitaStatusModifiedPostCalled
+      augroup vim-gita-temporary
+        autocmd! *
+      augroup END
+    End
+  End
+End
+
+

@@ -1,0 +1,6 @@
+conftest.c: In function 'main':
+conftest.c:58:20: warning: unused variable 'res' [-Wunused-variable]
+ char s[10000]; int res = tgetent(s, "thisterminaldoesnotexist");
+                    ^~~
+E:/Program-Files/Editor/Perl/Strawberry/c/bin/../lib/gcc/x86_64-w64-mingw32/8.3.0/../../../../x86_64-w64-mingw32/bin/ld.exe: C:\Users\natew\AppData\Local\Temp\ccJPwobj.o:conftest.c:(.text.startup+0x1f): undefined reference to `tgetent'
+collect2.exe: error: ld returned 1 exit status

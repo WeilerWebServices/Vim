@@ -1,0 +1,4 @@
+#!/bin/sh
+
+DIR=$(cd $(dirname $0); pwd)
+java -cp $DIR/EmmyLua-LS-all.jar com.tang.vscode.MainKt

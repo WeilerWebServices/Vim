@@ -1,0 +1,48 @@
+*landscape.txt*	A colorscheme and syntax for Vim
+
+Author: itchyny (https://github.com/itchyny)
+License: MIT License
+Repository: https://github.com/itchyny/landscape.vim
+
+CONTENTS					*landscape-contents*
+
+Introduction				|landscape-introduction|
+Airline Theme				|landscape-airline|
+
+==============================================================================
+INTRODUCTION					*landscape-introduction*
+
+*landscape* is a colorscheme plugin for Vim.
+It also provides some syntax files.
+
+==============================================================================
+AIRLINE THEME					*landscape-airline*
+This plugin also contains a theme for |airline|
+(https://github.com/bling/vim-airline). You can use the theme by the following
+setting.
+>
+	let g:airline_theme = 'landscape'
+<
+Also, the following settings will be nice.
+>
+	let g:airline#extensions#hunks#non_zero_only = 1
+	let g:airline#extensions#whitespace#enabled = 0
+	let g:airline#extensions#branch#enabled = 0
+	let g:airline#extensions#readonly#enabled = 0
+	let g:airline_section_b =
+	    \ '%{airline#extensions#branch#get_head()}' .
+	    \ '%{""!=airline#extensions#branch#get_head()?("  " . g:airline_left_alt_sep . " "):""}' .
+	    \ '%{airline#extensions#readonly#get_mark()}' .
+	    \ '%t%( %M%)'
+	let g:airline_section_c = ''
+	let s:sep = " %{get(g:, 'airline_right_alt_sep', '')} "
+	let g:airline_section_x =
+	    \ '%{strlen(&fileformat)?&fileformat:""}'.s:sep.
+	    \ '%{strlen(&fenc)?&fenc:&enc}'.s:sep.
+	    \ '%{strlen(&filetype)?&filetype:"no ft"}'
+	let g:airline_section_y = '%3p%%'
+	let g:airline_section_z = get(g:, 'airline_linecolumn_prefix', '').'%3l:%-2v'
+<
+
+==============================================================================
+vim:tw=78:sw=4:ts=8:ft=help:norl:noet:

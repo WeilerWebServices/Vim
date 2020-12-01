@@ -1,0 +1,12 @@
+[package]
+name = "lsp-tee"
+version = "0.1.0"
+authors = ["Tomasz Zurkowski <zurkowski@google.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+serde_json = "^1.0.38"
+serde = { version = "^1.0.88", features = ["derive"] }
+chrono = "0.4"

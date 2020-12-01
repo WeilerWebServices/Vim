@@ -1,0 +1,3 @@
+#!/bin/sh
+DIR=$(cd $(dirname $0); pwd)
+java "-Dline.speparator=\r\n" -jar "$DIR/extension/server/lsp-service-cobol-0.9.1.jar" pipeEnabled

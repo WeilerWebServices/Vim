@@ -1,0 +1,9 @@
+[workspace]
+
+members = [
+    "lsp-tee",
+    "vimscript-core",
+    "vimscript-language-server",
+    "vimscript-format",
+    "vimscript-lint",
+]

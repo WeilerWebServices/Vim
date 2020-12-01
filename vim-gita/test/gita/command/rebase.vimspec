@@ -1,0 +1,195 @@
+Describe gita#command#rebase
+  Before all
+    let V = vital#of('vital')
+    let Path = V.import('System.Filepath')
+    let Guard = V.import('Vim.Guard')
+    let ScriptLocal = V.import('Vim.ScriptLocal')
+    let ProcessMock = V.import('System.Process.Mock')
+  End
+
+  Before
+    let sf = ScriptLocal.sfuncs(
+          \ Path.realpath('autoload/gita/command/rebase.vim')
+          \)
+    let guard = Guard.store([
+          \ 'g:gita#process#options',
+          \ 'g:gita#command#rebase#default_options',
+          \])
+    let g:gita#process#options = {
+          \ 'clients': [deepcopy(ProcessMock)],
+          \}
+  End
+
+  After
+    call guard.restore()
+  End
+
+  Describe s:args_from_options({git}, {options})
+    It returns a {args} List of {options}
+      new
+      let options = {
+            \ 'onto': 'A',
+            \ 'continue': 1,
+            \ 'abort': 1,
+            \ 'keep-empty': 1,
+            \ 'skip': 1,
+            \ 'merge': 1,
+            \ 'strategy': ['A', 'B', 'C'],
+            \ 'strategy-option': 'A',
+            \ 'gpg-sign': 1,
+            \ 'stat': 1,
+            \ 'no-stat': 1,
+            \ 'no-verify': 1,
+            \ 'verify': 1,
+            \ 'C': 'A',
+            \ 'force-rebase': 1,
+            \ 'fork-point': 1,
+            \ 'no-fork-point': 1,
+            \ 'ignore-whitespace': 1,
+            \ 'whitespace': 1,
+            \ 'preserve-merges': 1,
+            \ 'exec': 'A',
+            \ 'root': 1,
+            \ 'autosquash': 1,
+            \ 'no-autosquash': 1,
+            \ 'autostash': 1,
+            \ 'no-autostash': 1,
+            \ 'no-ff': 1,
+            \}
+      let git = gita#core#get_or_fail()
+      let ret = sf.args_from_options(git, options)
+      Assert Equals(ret, [
+            \ 'rebase',
+            \ '--verbose',
+            \ '-CA',
+            \ '--abort',
+            \ '--autosquash',
+            \ '--autostash',
+            \ '--continue',
+            \ '--exec=A',
+            \ '--force-rebase',
+            \ '--fork-point',
+            \ '--gpg-sign',
+            \ '--ignore-whitespace',
+            \ '--keep-empty',
+            \ '--merge',
+            \ '--no-autosquash',
+            \ '--no-autostash',
+            \ '--no-ff',
+            \ '--no-fork-point',
+            \ '--no-stat',
+            \ '--no-verify',
+            \ '--onto=A',
+            \ '--preserve-merges',
+            \ '--root',
+            \ '--skip',
+            \ '--stat',
+            \ '--strategy=A', '--strategy=B', '--strategy=C',
+            \ '--strategy-option=A',
+            \ '--verify',
+            \ '--whitespace',
+            \])
+    End
+
+    It ignores unknown attributes in {options}
+      let options = {
+            \ 'foobar': 1,
+            \}
+      let git = gita#core#get_or_fail()
+      let ret = sf.args_from_options(git, options)
+      Assert Equals(ret, [
+            \ 'rebase',
+            \ '--verbose',
+            \])
+    End
+  End
+
+  Describe #execute({git}, {options})
+    let prefix = ['rebase', '--verbose']
+
+    It executes 'rebase --verbose' for options: {}
+      let git = gita#core#get()
+      let result = gita#command#rebase#execute(git, {})
+      Assert Equals(result.args[-2:], [
+            \ 'rebase', '--verbose',
+            \])
+    End
+
+    It executes 'rebase --verbose --stat' for options: {'abort': 1}
+      let git = gita#core#get()
+      let result = gita#command#rebase#execute(git, {
+            \ 'abort': 1,
+            \})
+      Assert Equals(result.args[-3:], [
+            \ 'rebase', '--verbose', '--abort',
+            \])
+    End
+
+    It executes 'rebase --verbose --abort --onto=A' for options: {'abort': 1, 'onto': 'A'}
+      let git = gita#core#get()
+      let result = gita#command#rebase#execute(git, {
+            \ 'abort': 1,
+            \ 'onto': 'A',
+            \})
+      Assert Equals(result.args[-4:], [
+            \ 'rebase', '--verbose', '--abort', '--onto=A',
+            \])
+    End
+
+    It executes 'rebase --verbose' for options: {'__unknown__': ['develop']}
+      let git = gita#core#get()
+      let result = gita#command#rebase#execute(git, {
+            \ '__unknown__': ['develop'],
+            \})
+      Assert Equals(result.args[-2:], [
+            \ 'rebase', '--verbose',
+            \])
+    End
+  End
+
+  Describe #command({bang}, {range}, {args})
+    let prefix = ['rebase', '--verbose']
+
+    It shows a help and do nothing if -h/--help is specified
+      silent let result = gita#command#rebase#command('', [0, 0], ['-h'])
+      Assert Equals(result, {})
+
+      silent let result = gita#command#rebase#command('', [0, 0], ['--help'])
+      Assert Equals(result, {})
+    End
+
+    It executes a command with default options
+      silent let result = gita#command#rebase#command('', [0, 0], [])
+      Assert Equals(result.args[-2:], prefix )
+
+      let g:gita#command#rebase#default_options = {
+            \ 'abort': 1,
+            \ 'onto': 'A',
+            \}
+      silent let result = gita#command#rebase#command('', [0, 0], [])
+      Assert Equals(result.args[-4:], [
+            \ 'rebase', '--verbose', '--abort', '--onto=A',
+            \])
+    End
+
+    It triggers modified
+      augroup vim-gita-temporary
+        autocmd! *
+        autocmd User GitaStatusModifiedPre let g:GitaStatusModifiedPreCalled = 1
+        autocmd User GitaStatusModifiedPost let g:GitaStatusModifiedPostCalled = 1
+      augroup END
+
+      let g:GitaStatusModifiedPreCalled = 0
+      let g:GitaStatusModifiedPostCalled = 0
+      silent let result = gita#command#rebase#command('', [0, 0], [])
+      Assert True(g:GitaStatusModifiedPreCalled)
+      Assert True(g:GitaStatusModifiedPostCalled)
+
+      unlet g:GitaStatusModifiedPreCalled
+      unlet g:GitaStatusModifiedPostCalled
+      augroup vim-gita-temporary
+        autocmd! *
+      augroup END
+    End
+  End
+End

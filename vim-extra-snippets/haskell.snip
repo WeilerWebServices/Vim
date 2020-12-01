@@ -1,0 +1,144 @@
+snippet mainEuler
+abbr euler
+	main :: IO ()
+	main = print $ euler${1} ${2}
+
+	-- euler$1 :: Int ->
+	euler$1 n = ${0}
+
+snippet mainContents
+abbr codeforces, atcoder
+	main :: IO ()
+	main = print . solve . lines =<< getContents
+
+	solve :: [String] ->
+	solve [${0}
+	solve _ = undefined
+
+snippet mainContentsInts
+abbr codeforces, atcoder
+	main :: IO ()
+	main = print . solve . map (map read . words) . lines =<< getContents
+
+	solve :: [[Int]] ->
+	solve [[${0}
+	solve _ = undefined
+
+snippet mainContentsNoLinesInts
+abbr codeforces, atcoder
+	main :: IO ()
+	main = print . solve . map read . words =<< getContents
+
+	solve :: [Int] ->
+	solve (${0}
+	solve _ = undefined
+
+snippet mainContentsEachInts
+abbr codeforces, atcoder
+	main :: IO ()
+	main = print . solve . map read . lines =<< getContents
+
+	solve :: [Int] ->
+	solve ${0}
+	solve _ = undefined
+
+snippet mainLineInts
+abbr codeforces, atcoder
+	main :: IO ()
+	main = getLine >>= print . solve . map read . words
+
+	solve :: [Int] ->
+	solve [${0}
+	solve _ = undefined
+
+snippet mainLineString
+abbr codeforces, atcoder
+	main :: IO ()
+	main = getLine >>= print . solve
+
+	solve :: String ->
+	solve ${0}
+
+snippet mainLineRead
+abbr codeforces, atcoder
+	main :: IO ()
+	main = readLn >>= print . solve
+
+	solve :: Integer ->
+	solve ${0}
+
+
+snippet prime
+abbr prime utility
+	${0}
+	primes :: Integral a => [a]
+	primes = 2 : filter isPrime [3,5..]
+
+	isPrime :: Integral a => a -> Bool
+	isPrime n = n > 1 && foldr (\p r -> p * p > n || n \`mod\` p /= 0 && r) True primes
+
+	primeFactors :: Integral a => a -> [a]
+	primeFactors n | n > 1 = go n primes
+	               | otherwise = []
+	   where go m ps@(p:t) | p * p > m  = [m]
+	                       | r == 0     =  p : go q ps
+	                       | otherwise  =      go m t
+	                          where (q, r) = quotRem m p
+	         go _ _ = []
+
+	numberOfDivisors :: Integral a => a -> Int
+	numberOfDivisors = product . map ((+1) . length) . group . primeFactors
+
+	factors :: Integral t => t -> [t]
+	factors n = [ m | m <- [1..n], n \`mod\` m == 0 ]
+
+snippet yesno
+abbr yesno :: Bool -> String
+	${0}
+	yesno :: Bool -> String
+	yesno True = "YES"
+	yesno _ = "NO"
+
+snippet output
+abbr output :: Bool -> String
+	${0}
+	output :: Bool -> String
+	output True = "${1}"
+	output _ = "${2}"
+
+snippet splitN
+abbr splitN :: Int -> [a] -> [[a]]
+	${0}
+	splitN :: Int -> [a] -> [[a]]
+	splitN n = takeWhile (not . null) . unfoldr (Just . splitAt n)
+
+snippet toTuple
+abbr toTuple :: [t] -> (t, t)
+	${0}
+	toTuple :: [a] -> (a, a)
+	toTuple xs = (head xs, xs !! 1)
+
+snippet distance
+abbr distance :: (a, a) -> (a, a) -> a
+	${0}
+	distance :: Floating a => (a, a) -> (a, a) -> a
+	distance (xa, ya) (xb, yb) = sqrt ((xa - xb) * (xa - xb) + (ya - yb) * (ya - yb))
+
+snippet binomial
+abbr binomial :: Integral a => a -> a -> a
+	${0}
+	binomial :: Integral a => a -> a -> a
+	binomial n k | k < 0 || n < k = 0
+	             | otherwise = product [n-k+1..n] \`div\` product [1..k]
+
+snippet factorial
+abbr factorial :: Integral a => a -> a
+	${0}
+	factorial :: Integral a => a -> a
+	factorial n = product [1..n]
+
+snippet same
+abbr same :: Eq a => [a] -> Bool
+	${0}
+	same :: Eq a => [a] -> Bool
+	same xs = all (==head xs) xs

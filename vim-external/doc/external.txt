@@ -1,0 +1,90 @@
+*external.txt*	Switch to external applications from Vim
+
+Version: 0.0
+Author: itchyny (https://github.com/itchyny)
+License: MIT License
+Repository: https://github.com/itchyny/vim-external
+Last Change: 2018/10/17 22:49:00.
+
+CONTENTS					*external-contents*
+
+Introduction				|external-introduction|
+Mapping					|external-mapping|
+Function				|external-function|
+Options					|external-options|
+Example					|external-example|
+Changelog				|external-changelog|
+
+==============================================================================
+INTRODUCTION					*external-introduction*
+
+The *external* ( *external.vim* *vim-external* )  helps you switch to external
+applications from Vim.
+
+------------------------------------------------------------------------------
+MAPPING						*external-mapping*
+Mappings of |external|.
+
+	<Plug>(external-editor)			*<Plug>(external-editor)*
+		Opens the current file with the external editor.
+
+	<Plug>(external-explorer)		*<Plug>(external-explorer)*
+		Opens the external explorer at the directory where the current
+		buffer file exists.
+
+	<Plug>(external-browser)		*<Plug>(external-browser)*
+		Opens the external browser with the searching word or the url
+		under the cursor.
+
+------------------------------------------------------------------------------
+FUNCTION					*external-function*
+Exposed functions of |external|.
+
+	external#editor([{file}])		*external#editor()*
+		Opens the file with the external editor.
+		If the argument is omitted, it opens the current file.
+
+	external#explorer([{file,directory}])	*external#explorer()*
+		Opens the external explorer at the directory where the {file}
+		exists. You can also specify a {directory}.
+		If the argument is omitted, it opens the directory where the
+		current file exists.
+
+	external#browser([{word,url}])		*external#browser()*
+		Opens the external browser. If the argument is a {word}, it
+		searches the word with Google by default (can be customized
+		with |g:external_search_engine|). If the argument is a {url},
+		it opens the site.
+		If the argument is omitted, it opens with the word or url
+		under the cursor.
+
+------------------------------------------------------------------------------
+OPTIONS						*external-options*
+
+g:external_url_pattern				*g:external_url_pattern*
+	You can configure the URL pattern with this variable. Set a regular
+	expression to this variable.
+	The default value is complicated. You can see the value by
+	|external#url_pattern()|.
+
+g:external_search_engine			*g:external_search_engine*
+	You can configure the search engine used in |external#browser()|. Set
+	it to a query URL where the text will be appended on its end.
+	The default value is `'https://www.google.com/search?q='`.
+
+------------------------------------------------------------------------------
+EXAMPLE						*external-example*
+An example of using the mappings of |external|.
+>
+	map <Leader>e <Plug>(external-editor)
+	map <Leader>n <Plug>(external-explorer)
+	map <Leader>b <Plug>(external-browser)
+<
+==============================================================================
+CHANGELOG					*external-changelog*
+
+0.0	2014-03-13, ...
+	- Initial commit
+
+==============================================================================
+vim:tw=78:sw=4:ts=8:ft=help:norl:noet:

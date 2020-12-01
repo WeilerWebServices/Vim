@@ -1,0 +1,189 @@
+Describe gita#command#add
+  Before all
+    let V = vital#of('vital')
+    let String = V.import('Data.String')
+    let Path = V.import('System.Filepath')
+    let Guard = V.import('Vim.Guard')
+    let ScriptLocal = V.import('Vim.ScriptLocal')
+    let ProcessMock = V.import('System.Process.Mock')
+  End
+
+  Before
+    let sf = ScriptLocal.sfuncs(
+          \ Path.realpath('autoload/gita/command/add.vim')
+          \)
+    let guard = Guard.store([
+          \ 'g:gita#process#options',
+          \ 'g:gita#command#add#default_options',
+          \])
+    let g:gita#process#options = {
+          \ 'clients': [deepcopy(ProcessMock)],
+          \}
+  End
+
+  After
+    call guard.restore()
+  End
+
+  Describe s:args_from_options({git}, {options})
+    It returns a {args} List of {options}
+      new foobar.txt
+      let options = {
+            \ 'dry-run': 1,
+            \ 'force': 1,
+            \ 'update': 1,
+            \ 'intent-to-add': 1,
+            \ 'all': 1,
+            \ 'ignore-removal': 1,
+            \ 'refresh': 1,
+            \ 'ignore-errors': 1,
+            \ 'ignore-missing': 1,
+            \ '__unknown__': [
+            \   '%',
+            \   'a',
+            \   'b',
+            \ ],
+            \}
+      let git = gita#core#get_or_fail()
+      let ret = sf.args_from_options(git, options)
+      Assert Equals(ret, [
+            \ 'add',
+            \ '--verbose',
+            \ '--all',
+            \ '--dry-run',
+            \ '--force',
+            \ '--ignore-errors',
+            \ '--ignore-missing',
+            \ '--ignore-removal',
+            \ '--intent-to-add',
+            \ '--refresh',
+            \ '--update',
+            \ '--',
+            \ expand('%:p'),
+            \ fnamemodify('.', ':p') . 'a',
+            \ fnamemodify('.', ':p') . 'b',
+            \])
+    End
+
+    It ignores unknown attributes in {options}
+      let options = {
+            \ 'foobar': 1,
+            \}
+      let git = gita#core#get_or_fail()
+      let ret = sf.args_from_options(git, options)
+      Assert Equals(ret, [
+            \ 'add',
+            \ '--verbose',
+            \ '--',
+            \])
+    End
+  End
+
+  Describe #execute({git}, {options})
+    let prefix = ['add', '--verbose']
+
+    It executes 'add --verbose --' for options: {}
+      let git = gita#core#get_or_fail()
+      let result = gita#command#add#execute(git, {})
+      Assert Equals(result.args[-3:], prefix + ['--'])
+    End
+
+    It executes 'add --verbose -- foobar.txt' for options: {'__unknown__': ['foobar.txt']}
+      let git = gita#core#get_or_fail()
+      let result = gita#command#add#execute(git, {
+            \ '__unknown__': ['foobar.txt'],
+            \})
+      Assert Equals(result.args[-4:], prefix + [
+            \ '--', fnamemodify('foobar.txt', ':p'),
+            \])
+    End
+
+    It executes 'add --verbose -- {cwd}' for options: {'__unknown__': ['.']}
+      let git = gita#core#get_or_fail()
+      let result = gita#command#add#execute(git, {
+            \ '__unknown__': ['.'],
+            \})
+      Assert Equals(result.args[-4:], prefix + [
+            \ '--', fnamemodify('.', ':p') . '.',
+            \])
+    End
+
+    It executes 'add --verbose -- {path}' for options: {'__unknown__': ['%']}
+      let git = gita#core#get_or_fail()
+      let result = gita#command#add#execute(git, {
+            \ '__unknown__': ['%'],
+            \})
+      Assert Equals(result.args[-4:], prefix + [
+            \ '--', expand('%:p'),
+            \])
+    End
+
+    It executes 'add --verbose --force -- {path}' for options: {'force': 1, '__unknown__': ['%']}
+      let git = gita#core#get_or_fail()
+      let result = gita#command#add#execute(git, {
+            \ 'force': 1,
+            \ '__unknown__': ['%'],
+            \})
+      Assert Equals(result.args[-5:], prefix + [
+            \ '--force', '--', expand('%:p'),
+            \])
+    End
+  End
+
+  Describe #command({bang}, {range}, {args})
+    let prefix = ['add', '--verbose']
+
+    It shows a help and do nothing if -h/--help is specified
+      silent let result = gita#command#add#command('', [0, 0], ['-h'])
+      Assert Equals(result, {})
+
+      silent let result = gita#command#add#command('', [0, 0], ['--help'])
+      Assert Equals(result, {})
+    End
+
+    It executes a command with default options
+      silent let result = gita#command#add#command('', [0, 0], [])
+      Assert Equals(result.args[-3:], prefix + ['--'])
+
+      let g:gita#command#add#default_options = {
+            \ 'dry-run': 1,
+            \ 'force': 1,
+            \}
+      silent let result = gita#command#add#command('', [0, 0], [])
+      Assert Equals(result.args[-5:], prefix + ['--dry-run', '--force', '--'])
+    End
+
+    It triggers modified
+      augroup vim-gita-temporary
+        autocmd! *
+        autocmd User GitaStatusModifiedPre let g:GitaStatusModifiedPreCalled = 1
+        autocmd User GitaStatusModifiedPost let g:GitaStatusModifiedPostCalled = 1
+      augroup END
+
+      let g:GitaStatusModifiedPreCalled = 0
+      let g:GitaStatusModifiedPostCalled = 0
+      silent let result = gita#command#add#command('', [0, 0], [])
+      Assert True(g:GitaStatusModifiedPreCalled)
+      Assert True(g:GitaStatusModifiedPostCalled)
+
+      " modified should not be triggered with -n/--dry-run option
+      let g:GitaStatusModifiedPreCalled = 0
+      let g:GitaStatusModifiedPostCalled = 0
+      silent let result = gita#command#add#command('', [0, 0], ['-n'])
+      Assert False(g:GitaStatusModifiedPreCalled)
+      Assert False(g:GitaStatusModifiedPostCalled)
+
+      let g:GitaStatusModifiedPreCalled = 0
+      let g:GitaStatusModifiedPostCalled = 0
+      silent let result = gita#command#add#command('', [0, 0], ['--dry-run'])
+      Assert False(g:GitaStatusModifiedPreCalled)
+      Assert False(g:GitaStatusModifiedPostCalled)
+
+      unlet g:GitaStatusModifiedPreCalled
+      unlet g:GitaStatusModifiedPostCalled
+      augroup vim-gita-temporary
+        autocmd! *
+      augroup END
+    End
+  End
+End
